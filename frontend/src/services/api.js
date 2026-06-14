@@ -117,6 +117,12 @@ export const campaignApi = {
   getCampaignLogs: async (id) => {
     const response = await client.get(`/campaigns/${id}/logs`);
     return response.data;
+  },
+
+  // DELETE /api/campaigns/:id - Delete a campaign
+  deleteCampaign: async (id) => {
+    const response = await client.delete(`/campaigns/${id}`);
+    return response.data;
   }
 };
 

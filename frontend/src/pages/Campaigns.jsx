@@ -5,9 +5,9 @@
  */
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Megaphone, Plus, MessageCircle, Smartphone, Mail, Play, CheckCircle, 
-  Loader2, Eye, Calendar, Users 
+import {
+  Megaphone, Plus, MessageCircle, Smartphone, Mail, Play, CheckCircle,
+  Loader2, Eye, Calendar, Users, Trash2
 } from 'lucide-react';
 
 import { campaignApi } from '../services/api';
@@ -29,7 +29,7 @@ const STATUS_CONFIG = {
 export default function Campaigns() {
   const navigate = useNavigate();
   const toast = useToast();
-  
+
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -65,7 +65,7 @@ export default function Campaigns() {
       setSendingId(id);
       toast.info('Initiating message dispatch sequence...');
       const data = await campaignApi.sendCampaign(id);
-      
+
       if (data.success) {
         toast.success(data.message || 'Campaign dispatch started successfully!');
         loadCampaigns();
@@ -78,6 +78,26 @@ export default function Campaigns() {
       toast.error(errMsg);
     } finally {
       setSendingId(null);
+    }
+  };
+
+  const handleDeleteCampaign = async (e, id) => {
+    e.stopPropagation(); // prevent card click nav redirect
+
+    if (!window.confirm('Are you sure you want to delete this campaign? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const data = await campaignApi.deleteCampaign(id);
+      if (data.success) {
+        toast.success(data.message || 'Campaign deleted successfully.');
+        loadCampaigns();
+      }
+    } catch (error) {
+      console.error('Failed to delete campaign:', error);
+      const errMsg = error.response?.data?.message || error.message || 'Delete process failed.';
+      toast.error(errMsg);
     }
   };
 
@@ -154,19 +174,26 @@ export default function Campaigns() {
                       <h3 className="font-bold text-slate-100 text-base truncate group-hover:text-[#6366F1] transition-colors duration-300">
                         {camp.name}
                       </h3>
-                      
+
                       <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-1 font-semibold">
                         <Users className="w-3.5 h-3.5" />
                         <span>Audience: <span className="text-slate-400">{camp.segmentName}</span></span>
                       </div>
                     </div>
 
-                    {/* Status Pill */}
+                    {/* Status Pill and Delete Button */}
                     <div className="shrink-0 flex items-center gap-2">
                       <span className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${status.bg} ${status.text} ${status.border}`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`} />
                         {status.label}
                       </span>
+                      <button
+                        onClick={(e) => handleDeleteCampaign(e, camp._id)}
+                        className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors border border-transparent hover:border-rose-500/10"
+                        title="Delete Campaign"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
                   </div>
 
@@ -230,9 +257,9 @@ export default function Campaigns() {
 
       {/* Creation Modal form */}
       {modalOpen && (
-        <CampaignForm 
-          onClose={() => setModalOpen(false)} 
-          onSuccess={handleCreateSuccess} 
+        <CampaignForm
+          onClose={() => setModalOpen(false)}
+          onSuccess={handleCreateSuccess}
         />
       )}
     </div>

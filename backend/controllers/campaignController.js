@@ -233,10 +233,35 @@ async function runBackgroundDispatch(campaign, customers) {
   }
 }
 
+/**
+ * Delete a campaign.
+ * DELETE /api/campaigns/:id
+ */
+async function deleteCampaign(req, res) {
+  try {
+    const campaign = await Campaign.findByIdAndDelete(req.params.id);
+    if (!campaign) {
+      return res.status(404).json({ success: false, message: 'Campaign not found.' });
+    }
+
+    // Clean up communication logs associated with this campaign
+    await CommunicationLog.deleteMany({ campaignId: campaign._id });
+
+    res.status(200).json({
+      success: true,
+      message: 'Campaign deleted successfully.',
+      deletedCampaignId: campaign._id
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Failed to delete campaign.', error: error.message });
+  }
+}
+
 module.exports = {
   getCampaigns,
   createCampaign,
   getCampaignDetail,
   getCampaignLogs,
-  sendCampaign
+  sendCampaign,
+  deleteCampaign
 };

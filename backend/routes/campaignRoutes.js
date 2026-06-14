@@ -21,4 +21,7 @@ router.get('/:id/logs', campaignController.getCampaignLogs);
 // POST /api/campaigns/:id/send - Trigger async background delivery
 router.post('/:id/send', campaignController.sendCampaign);
 
+// DELETE /api/campaigns/:id - Delete campaign
+router.delete('/:id', campaignController.deleteCampaign);
+
 module.exports = router;
