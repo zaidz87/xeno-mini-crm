@@ -1,0 +1,11 @@
+name,email,phone,totalSpend,orderCount,lastOrderDate
+Priya Sharma,priya@example.com,9876543210,5200,8,2024-03-15
+Rahul Verma,rahul@example.com,9876543211,1200,2,2024-01-20
+Ananya Sen,ananya.sen@example.com,9876543212,8700,5,2024-05-10
+Arjun Patel,arjun.patel@example.com,9876543213,24000,18,2024-06-01
+Deepika Nair,deepika@example.com,9876543214,350,1,2024-02-28
+Rohan Malhotra,rohan@example.com,9876543215,900,3,2024-01-15
+Sneha Rao,sneha.rao@example.com,9876543216,11500,9,2024-05-24
+Vikram Singh,vikram.singh@example.com,9876543217,6200,4,2024-04-18
+Pooja Gupta,pooja.gupta@example.com,9876543218,150,1,2024-03-01
+Aditya Joshi,aditya@example.com,9876543219,3900,3,2024-05-30
