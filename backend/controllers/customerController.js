@@ -6,6 +6,9 @@ const { Readable } = require('stream');
 const csv = require('csv-parser');
 const Customer = require('../models/Customer');
 const Order = require('../models/Order');
+const Segment = require('../models/Segment');
+const Campaign = require('../models/Campaign');
+const CommunicationLog = require('../models/CommunicationLog');
 const { seedDatabase } = require('../seed/seedData');
 
 /**
@@ -241,9 +244,35 @@ async function seedCustomers(req, res) {
   }
 }
 
+/**
+ * Clear all collections and reseed with mock data.
+ * DELETE /api/customers/clear
+ */
+async function clearAndReseedCustomers(req, res) {
+  try {
+    await Promise.all([
+      Customer.deleteMany({}),
+      Order.deleteMany({}),
+      Segment.deleteMany({}),
+      Campaign.deleteMany({}),
+      CommunicationLog.deleteMany({})
+    ]);
+
+    const summary = await seedDatabase();
+    res.status(200).json({
+      success: true,
+      message: 'Database successfully cleared and reseeded with mock Indian customers and orders.',
+      data: summary
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Failed to clear and reseed database.', error: error.message });
+  }
+}
+
 module.exports = {
   getCustomers,
   importCustomers,
   importOrders,
-  seedCustomers
+  seedCustomers,
+  clearAndReseedCustomers
 };

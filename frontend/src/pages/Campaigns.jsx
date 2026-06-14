@@ -189,7 +189,7 @@ export default function Campaigns() {
                       </span>
                       <button
                         onClick={(e) => handleDeleteCampaign(e, camp._id)}
-                        className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors border border-transparent hover:border-rose-500/10"
+                        className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 bg-slate-800/30 hover:border-rose-500/20 rounded-lg transition-all border border-slate-700/30"
                         title="Delete Campaign"
                       >
                         <Trash2 className="w-4 h-4" />

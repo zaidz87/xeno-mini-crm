@@ -16,4 +16,7 @@ router.post('/import', upload.single('file'), customerController.importCustomers
 // POST /api/customers/seed - Seed database with demo data
 router.post('/seed', customerController.seedCustomers);
 
+// DELETE /api/customers/clear - Clear database collections and reseed
+router.delete('/clear', customerController.clearAndReseedCustomers);
+
 module.exports = router;

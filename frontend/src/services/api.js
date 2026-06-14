@@ -43,6 +43,12 @@ export const customerApi = {
   seedCustomers: async () => {
     const response = await client.post('/customers/seed');
     return response.data;
+  },
+
+  // DELETE /api/customers/clear - Clear database collections and reseed
+  clearAndReseedCustomers: async () => {
+    const response = await client.delete('/customers/clear');
+    return response.data;
   }
 };
 

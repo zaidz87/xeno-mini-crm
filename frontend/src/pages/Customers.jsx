@@ -6,7 +6,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { 
   Users, Search, Upload, Download, Database, ChevronLeft, ChevronRight, 
-  Loader2, AlertCircle, ShoppingBag 
+  Loader2, AlertCircle, ShoppingBag, Trash2
 } from 'lucide-react';
 
 import { customerApi, orderApi } from '../services/api';
@@ -24,6 +24,30 @@ export default function Customers() {
 
   const [activeUploadModal, setActiveUploadModal] = useState(null); // 'customers' | 'orders' | null
   const [seeding, setSeeding] = useState(false);
+  const [clearing, setClearing] = useState(false);
+
+  const handleClearAndReseed = async () => {
+    const confirmed = window.confirm(
+      "WARNING: This will permanently delete ALL customers, orders, segments, campaigns, and communication logs from the database, and generate 100 fresh mock customers. Are you sure you want to proceed?"
+    );
+    if (!confirmed) return;
+
+    try {
+      setClearing(true);
+      toast.info('Clearing database and generating fresh dataset...');
+      const data = await customerApi.clearAndReseedCustomers();
+      if (data.success) {
+        toast.success(`Database successfully cleared and reseeded with ${data.data.customersCount} fresh profiles.`);
+        setPage(1);
+        loadCustomers(search, 1);
+      }
+    } catch (error) {
+      console.error('Clear & Reseed failed:', error);
+      toast.error(error.response?.data?.message || error.message || 'Clear & Reseed process failed.');
+    } finally {
+      setClearing(false);
+    }
+  };
 
   // Load customer lists from API
   const loadCustomers = useCallback(async (searchQuery = '', pageNum = 1) => {
@@ -128,11 +152,21 @@ export default function Customers() {
           {/* Seeding */}
           <button
             onClick={handleSeedData}
-            disabled={seeding || loading}
+            disabled={seeding || clearing || loading}
             className="flex items-center gap-2 bg-[#2A2D3A] hover:bg-[#2A2D3A]/80 disabled:opacity-50 disabled:cursor-not-allowed border border-[#2A2D3A] px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200"
           >
             {seeding ? <Loader2 className="w-4 h-4 animate-spin text-[#6366F1]" /> : <Database className="w-4 h-4 text-slate-400" />}
             Seed Demo Data
+          </button>
+
+          {/* Clear & Reseed */}
+          <button
+            onClick={handleClearAndReseed}
+            disabled={clearing || seeding || loading}
+            className="flex items-center gap-2 bg-rose-500/10 hover:bg-rose-500/20 disabled:opacity-50 disabled:cursor-not-allowed border border-rose-500/20 px-4 py-2.5 rounded-xl text-sm font-semibold text-rose-400 transition-all duration-200"
+          >
+            {clearing ? <Loader2 className="w-4 h-4 animate-spin text-rose-500" /> : <Trash2 className="w-4 h-4" />}
+            Clear & Reseed Data
           </button>
 
           {/* Template Downloads */}

@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, Megaphone, Calendar, Layers, Activity, 
-  Send, CheckCircle, AlertTriangle, Eye, MousePointerClick, RefreshCw 
+  Send, CheckCircle, AlertTriangle, Eye, MousePointerClick, RefreshCw, Trash2 
 } from 'lucide-react';
 
 import { campaignApi } from '../services/api';
@@ -31,6 +31,24 @@ export default function CampaignDetail() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pollingActive, setPollingActive] = useState(false);
+
+  const handleDeleteCampaign = async () => {
+    if (!window.confirm('Are you sure you want to delete this campaign? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const data = await campaignApi.deleteCampaign(id);
+      if (data.success) {
+        toast.success(data.message || 'Campaign deleted successfully.');
+        navigate('/campaigns');
+      }
+    } catch (error) {
+      console.error('Failed to delete campaign:', error);
+      const errMsg = error.response?.data?.message || error.message || 'Delete process failed.';
+      toast.error(errMsg);
+    }
+  };
 
   useEffect(() => {
     let intervalId;
@@ -159,10 +177,21 @@ export default function CampaignDetail() {
           </div>
         </div>
 
-        {/* Big Status Badge */}
-        <div className={`flex items-center gap-2 px-4 py-2 border rounded-full font-bold text-xs ${statusStyle.bg} ${statusStyle.color}`}>
-          <span className={`w-2 h-2 rounded-full ${statusStyle.dot}`} />
-          {statusStyle.label}
+        {/* Big Status Badge & Delete Button */}
+        <div className="flex items-center gap-3">
+          <div className={`flex items-center gap-2 px-4 py-2 border rounded-full font-bold text-xs ${statusStyle.bg} ${statusStyle.color}`}>
+            <span className={`w-2 h-2 rounded-full ${statusStyle.dot}`} />
+            {statusStyle.label}
+          </div>
+          
+          <button
+            onClick={handleDeleteCampaign}
+            className="flex items-center gap-2 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 px-4 py-2.5 rounded-xl text-xs font-bold text-rose-400 transition-all duration-200"
+            title="Delete Campaign"
+          >
+            <Trash2 className="w-4 h-4" />
+            Delete Campaign
+          </button>
         </div>
       </div>
 
